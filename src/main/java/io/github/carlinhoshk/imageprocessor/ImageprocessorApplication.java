@@ -8,18 +8,17 @@ import org.opencv.objdetect.Objdetect;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import nu.pattern.OpenCV;
 
 @SpringBootApplication
 public class ImageprocessorApplication {
 
-    
+    static{ System.loadLibrary(Core.NATIVE_LIBRARY_NAME);}
     static final String sourceImagePath = "./src/main/resources/data/input/img.png";
     static final String targetImagePath = "./src/main/resources/data/output/output.png";
 
     public static void main(String[] args) {
 
-        OpenCV.loadShared();
+        
         Mat loadedImage = loadImage(sourceImagePath);
         MatOfRect facesDetected = new MatOfRect();
 
