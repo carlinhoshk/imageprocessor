@@ -1,0 +1,4 @@
+
+# melhorar acuracia OCR usando filtros opencv
+
+https://stackoverflow.com/questions/9480013/image-processing-to-improve-tesseract-ocr-accuracy
