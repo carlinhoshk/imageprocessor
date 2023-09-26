@@ -13,12 +13,12 @@ RUN apt update && \
 # Note that the Java jar version must match the version we build here - 3.2 at the moment
 
 # Create the build directory if it doesn't exist and set it as the working directory
-RUN mkdir -p /build
-WORKDIR /build
+
+
 
 RUN wget -O opencv.zip https://github.com/opencv/opencv/archive/3.2.0.zip && unzip opencv.zip
 
-
+WORKDIR /opencv
 # Configure OpenCV. Turn off features we do not need to restrict size
 # See: https://docs.opencv.org/4.x/db/d05/tutorial_config_reference.html
 #
@@ -41,7 +41,7 @@ RUN cmake -DWITH_GSTREAMER=OFF \
     -DOPENCV_FFMPEG_SKIP_BUILD_CHECK=ON \
     -DWITH_V4L=OFF \
     -DWITH_FFMPEG=ON \
-    -DBUILD_opencv_python3=OFF /opencv/opencv-3.2.0
+    -DBUILD_opencv_python3=OFF /opencv-3.2.0
 
 # Build OpenCV Java shared lib
 RUN make -j8
