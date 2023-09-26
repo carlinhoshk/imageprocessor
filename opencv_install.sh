@@ -39,14 +39,14 @@ cmake -DWITH_GSTREAMER=OFF \
 -DOPENCV_FFMPEG_SKIP_BUILD_CHECK=ON \
 -DWITH_V4L=OFF \
 -DWITH_FFMPEG=ON \
--DBUILD_opencv_python3=OFF ../opencv-3.2.0
+-DBUILD_opencv_python3=OFF ../opencv/opencv-3.2.0
 
 # Compile o OpenCV
 make -j8
 
 # Copie os arquivos necessários para a pasta "build" no diretório atual
-cp ../opencv-3.2.0/bin/opencv-320.jar .
-cp ../opencv-3.2.0/lib/libopencv_java320.so .
+cp ../opencv/opencv-3.2.0/bin/opencv-320.jar .
+cp ../opencv/opencv-3.2.0/lib/libopencv_java320.so .
 
 # Copie as bibliotecas compartilhadas necessárias pelo OpenCV para a pasta "lib" no diretório atual
 # Nota: você pode ajustar essa lista de acordo com suas necessidades
