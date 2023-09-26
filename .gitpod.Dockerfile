@@ -11,8 +11,8 @@ libavcodec-dev libavformat-dev libswscale-dev libavutil-dev libswresample-dev li
 ffmpeg libpulse0 -y
 
 # Download and unpack OpenCV sources
-# Note that the Java jar version must match the version we build here - 4.8 at the moment
-RUN wget -O opencv.zip https://github.com/opencv/opencv/archive/4.x.zip && unzip opencv.zip
+# Note that the Java jar version must match the version we build here - 3.2 at the moment
+RUN wget -O opencv.zip https://github.com/opencv/opencv/archive/3.2.0.zip && unzip opencv.zip
 
 # Create build directory
 RUN mkdir -p build && cd build
@@ -107,8 +107,8 @@ COPY --from=opencv-libs /usr/bin/ffmpeg /usr/bin/ffmpeg
 
 # Big(ish) static lib from the OpenCV build. Contains all OpenCV deps.
 # OpenCV JNI layer needs this to work
-COPY --from=opencv-libs /lib/libopencv_java480.so /opencvlibs/
-COPY --from=opencv-libs /bin/opencv-480.jar /opencvlibs/
+COPY --from=opencv-libs /lib/libopencv_java320.so /opencvlibs/
+COPY --from=opencv-libs /bin/opencv-320.jar /opencvlibs/
 
 # These are all the shared libs needed by OpenCV - not available in the Distroless container
 # Copy all the /lib dir. Linux will pick up shared libs from /lib by default convention
