@@ -1,5 +1,10 @@
 image:
   file: .gitpod.Dockerfile
+
+tasks:
+    - name: Install Opencv Build
+      command: sh ./opencv_install.sh
+      openMode: split-right  
   
 vscode:
   extensions:
