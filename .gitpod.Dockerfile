@@ -90,7 +90,7 @@ RUN cmake -DWITH_GSTREAMER=OFF \
 -DOPENCV_FFMPEG_SKIP_BUILD_CHECK=ON \
 -DWITH_V4L=OFF \
 -DWITH_FFMPEG=ON \
--DBUILD_opencv_python3=OFF ../opencv/opencv-3.2.0
+-DBUILD_opencv_python3=OFF ../opencv/opencv-3.2.0/
 
 # Build OpenCV Java shared lib
 RUN make -j8
