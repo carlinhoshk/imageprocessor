@@ -95,7 +95,13 @@ RUN cmake -DWITH_GSTREAMER=OFF \
 # Build OpenCV Java shared lib
 RUN make -j8
 
-FROM debian:11 AS opencv
+FROM gitpod/workspace-full
+
+USER gitpod
+
+RUN bash -c ". /home/gitpod/.sdkman/bin/sdkman-init.sh && \
+    sdk install java 17.0.3-ms && \
+    sdk default java 17.0.3-ms"
 
 COPY --from=opencv-libs /usr/bin/ffmpeg /usr/bin/ffmpeg
 
