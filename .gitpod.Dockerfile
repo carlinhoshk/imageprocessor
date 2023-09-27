@@ -316,10 +316,6 @@ FROM gitpod/workspace-full
 
 USER gitpod
 
-RUN bash -c ". /home/gitpod/.sdkman/bin/sdkman-init.sh && \
-    sdk install java 11.0.3-ms && \
-    sdk default java 11.0.3-ms"
-
 COPY --from=build /opencvlibs/* /opencvlibs/
 COPY --from=build /app/target/*.jar /app/app.jar
 RUN ls /opencvlibs
