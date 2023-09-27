@@ -1,58 +1,101 @@
 FROM debian:11 AS opencv-libs
 
-# Install minimal prerequisites (Debian 11)
+# Install minimal prerequisites (Ubuntu 18.04 as reference)
 # Build tools for OpenCV
 # libavcodec, libavformat, libswscale, libavutil, libswresample are needed by ffmpeg. See https://ffmpeg.org/about.html
 RUN apt update && \
-    apt install -y cmake build-essential g++ openjdk-17-jdk wget unzip ant python3 python3-numpy \
-    libtbb-dev libeigen3-dev \
-    libavcodec-dev libavformat-dev libswscale-dev libavutil-dev libswresample-dev liblzma-dev \
-    ffmpeg libpulse0
+apt install \
+cmake build-essential g++ openjdk-17-jdk wget unzip ant python3 python3-numpy \
+libtbb-dev libeigen3-dev \
+libavcodec-dev libavformat-dev libswscale-dev libavutil-dev libswresample-dev liblzma-dev \
+ffmpeg libpulse0 -y
 
 # Download and unpack OpenCV sources
-# Note that the Java jar version must match the version we build here - 3.2 at the moment
-
-# Create the build directory if it doesn't exist and set it as the working directory
-
-
-
+# Note that the Java jar version must match the version we build here - 4.8 at the moment
 RUN wget -O opencv.zip https://github.com/opencv/opencv/archive/3.2.0.zip && unzip opencv.zip
 
-WORKDIR /opencv
+# Create build directory
+RUN mkdir -p build && cd build
+
 # Configure OpenCV. Turn off features we do not need to restrict size
 # See: https://docs.opencv.org/4.x/db/d05/tutorial_config_reference.html
 #
 # CMAKE OUTPUT, MUST LOOK LIKE SHOWN BELOW:
-# (O restante do seu comando cmake permanece o mesmo)
+# Important things to note:
+# - Java/ant/JNI are enabled under Java:
+# - FFMPEG is enabled under Video I/O:
+#
+# CMAKE OUTPUT #################################################################################################################################
+#11 28.73 --   OpenCV modules:
+#11 28.74 --     To be built:                 calib3d core features2d flann gapi imgcodecs imgproc java objdetect photo stitching video videoio
+#11 28.74 --     Disabled:                    dnn highgui ml world
+#11 28.74 --     Disabled by dependency:      -
+#11 28.74 --     Unavailable:                 python2 python3 ts
+#11 28.74 --     Applications:                -
+#11 28.74 --     Documentation:               NO
+#11 28.74 --     Non-free algorithms:         NO
+#11 28.74 --
+#11 28.74 --   GUI:
+#11 28.74 --     GTK+:                        NO
+#11 28.74 --     VTK support:                 NO
+#11 28.74 --
+#11 28.74 --   Media I/O:
+#11 28.74 --     ZLib:                        zlib (ver 1.2.13)
+#11 28.74 --     JPEG:                        libjpeg-turbo (ver 2.1.3-62)
+#11 28.74 --     WEBP:                        build (ver encoder: 0x020f)
+#11 28.74 --     PNG:                         build (ver 1.6.37)
+#11 28.74 --     TIFF:                        build (ver 42 - 4.2.0)
+#11 28.74 --     JPEG 2000:                   build (ver 2.5.0)
+#11 28.74 --     OpenEXR:                     build (ver 2.3.0)
+#11 28.75 --     HDR:                         YES
+#11 28.75 --     SUNRASTER:                   YES
+#11 28.75 --     PXM:                         YES
+#11 28.75 --     PFM:                         YES
+#11 28.75 --
+#11 28.75 --   Video I/O:
+#11 28.75 --     DC1394:                      NO
+#11 28.75 --     FFMPEG:                      YES
+#11 28.75 --       avcodec:                   YES (58.91.100)
+#11 28.75 --       avformat:                  YES (58.45.100)
+#11 28.75 --       avutil:                    YES (56.51.100)
+#11 28.75 --       swscale:                   YES (5.7.100)
+#11 28.75 --       avresample:                NO
+#11 28.75 --
+#...
+#11 28.76 --   Java:
+#11 28.76 --     ant:                         /usr/bin/ant (ver 1.10.9)
+#11 28.76 --     Java:                        NO
+#11 28.76 --     JNI:                         /usr/lib/jvm/java-17-openjdk-amd64/include /usr/lib/jvm/java-17-openjdk-amd64/include/linux /usr/lib/jvm/java-17-openjdk-amd64/include
+#11 28.76 --     Java wrappers:               YES (ANT)
+#11 28.76 --     Java tests:                  NO
+# ########################################################################################################################################################
+
+# OpenCV build needs JDK
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+
 RUN cmake -DWITH_GSTREAMER=OFF \
-    -DBUILD_opencv_highgui=OFF \
-    -DBUILD_opencv_dnn=OFF \
-    -DBUILD_opencv_ml=OFF \
-    -DBUILD_opencv_apps=OFF \
-    -DBUILD_opencv_js=OFF \
-    -DBUILD_opencv_ts=OFF \
-    -DBUILD_opencv_viz=OFF \
-    -DBUILD_opencv_legacy=OFF \
-    -DBUILD_opencv_androidcamera=OFF \
-    -DBUILD_SHARED_LIBS=OFF \
-    -DBUILD_PERF_TESTS=OFF \
-    -DBUILD_TESTS=OFF \
-    -DBUILD_opencv_python2=OFF  \
-    -DOPENCV_FFMPEG_SKIP_BUILD_CHECK=ON \
-    -DWITH_V4L=OFF \
-    -DWITH_FFMPEG=ON \
-    -DBUILD_opencv_python3=OFF /opencv-3.2.0
+-DBUILD_opencv_highgui=OFF \
+-DBUILD_opencv_dnn=OFF \
+-DBUILD_opencv_ml=OFF \
+-DBUILD_opencv_apps=OFF \
+-DBUILD_opencv_js=OFF \
+-DBUILD_opencv_ts=OFF \
+-DBUILD_opencv_viz=OFF \
+-DBUILD_opencv_lagacy=OFF \
+-DBUILD_opencv_androidcamera=OFF \
+-DBUILD_SHARED_LIBS=OFF \
+-DBUILD_PERF_TESTS=OFF \
+-DBUILD_TESTS=OFF \
+-DBUILD_opencv_python2=OFF  \
+-DOPENCV_FFMPEG_SKIP_BUILD_CHECK=ON \
+-DWITH_V4L=OFF \
+-DWITH_FFMPEG=OFF \
+-DBUILD_opencv_python3=OFF ../opencv-3.2.0
 
 # Build OpenCV Java shared lib
 RUN make -j8
 
-FROM gitpod/workspace-full
-
-USER gitpod
-
-RUN bash -c ". /home/gitpod/.sdkman/bin/sdkman-init.sh && \
-    sdk install java 17.0.3-ms && \
-    sdk default java 17.0.3-ms"
+FROM debian:11 AS build
 
 COPY --from=opencv-libs /usr/bin/ffmpeg /usr/bin/ffmpeg
 
@@ -248,3 +291,39 @@ COPY --from=opencv-libs /lib/liblzma* \
 /opencvlibs/
 
 ENTRYPOINT ["ls", "opencvlibs"]
+
+# Instale as dependências necessárias
+RUN apt-get update && apt-get install -y \
+    curl \
+    openjdk-11-jdk \
+    && rm -rf /var/lib/apt/lists/*
+
+# Faça o download e instale o Maven
+RUN curl -fsSL -o /tmp/apache-maven.tar.gz https://archive.apache.org/dist/maven/maven-3/3.8.3/binaries/apache-maven-3.8.3-bin.tar.gz \
+    && tar -xzf /tmp/apache-maven.tar.gz -C /opt \
+    && rm /tmp/apache-maven.tar.gz \
+    && ln -s /opt/apache-maven-3.8.3 /opt/maven \
+    && ln -s /opt/maven/bin/mvn /usr/bin/mvn
+
+
+
+WORKDIR /app
+COPY . .
+RUN mvn clean package -DskipTests
+
+
+FROM gitpod/workspace-full
+
+USER gitpod
+
+RUN bash -c ". /home/gitpod/.sdkman/bin/sdkman-init.sh && \
+    sdk install java 11.0.3-ms && \
+    sdk default java 11.0.3-ms"
+
+COPY --from=build /opencvlibs/* /opencvlibs/
+COPY --from=build /app/target/*.jar /app/app.jar
+RUN ls /opencvlibs
+
+WORKDIR /app
+
+ENTRYPOINT java -Djava.library.path=/opencvlibs/ -jar app.jar
