@@ -89,7 +89,7 @@ RUN cmake -DWITH_GSTREAMER=OFF \
 -DBUILD_opencv_python2=OFF  \
 -DOPENCV_FFMPEG_SKIP_BUILD_CHECK=ON \
 -DWITH_V4L=OFF \
--DWITH_FFMPEG=ON \
+-DWITH_FFMPEG=OFF \
 -DBUILD_opencv_python3=OFF ../opencv-3.2.0
 
 # Build OpenCV Java shared lib
@@ -312,10 +312,12 @@ COPY . .
 RUN mvn clean package -DskipTests
 
 
-
 FROM openjdk:11
 
+COPY --from=build /opencvlibs/* /opencvlibs/
 COPY --from=build /app/target/*.jar /app/app.jar
+RUN ls /opencvlibs
+
 WORKDIR /app
 
-ENTRYPOINT java -Djava.library.path=/opencvlibs/bin/opencv-320.jar -jar app.jar
+ENTRYPOINT java -Djava.library.path=/opencvlibs/ -jar app.jar
